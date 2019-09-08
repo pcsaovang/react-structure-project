@@ -1,0 +1,1 @@
+export const SET_ACTIVE_BREAKPOINT = '@layout/SET_ACTIVE_BREAKPOINT'
