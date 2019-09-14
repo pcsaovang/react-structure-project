@@ -22,3 +22,17 @@ export const onAuthSuccess = () => next => action => {
 
   return next(action)
 }
+
+export const checkAuthOnRehydrate = store => next => action => {
+  if (action.type === 'persist/REHYDRATE') {
+    if (action.payload && action.payload.auth && action.payload.auth.token) {
+      const { token } = action.payload.auth
+      axios.defaults.headers.common.Authorization = `${token.tokenType} ${
+        token.accessToken
+      }`
+    } else {
+      delete axios.defaults.headers.Authorization
+    }
+  }
+  return next(action)
+}

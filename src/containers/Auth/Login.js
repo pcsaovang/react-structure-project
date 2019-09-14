@@ -1,10 +1,24 @@
 import { connect } from 'react-redux'
+import { push } from 'connected-react-router'
 import LoginCpn from '../../components/Auth/Login'
+import { login } from './actions'
 
 const mapStateToProps = state => {
   return {
-    breakpoint: state.layout.breakpoint,
+    auth: state.auth
   }
 }
 
-export default connect(mapStateToProps)(LoginCpn)
+const mapDispatchToProps = dispatch => {
+  return {
+    handleLogin: ({ email, password }) => {
+      return dispatch(login({ email, password }))
+    },
+    goHome: () => dispatch(push('/'))
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(LoginCpn)

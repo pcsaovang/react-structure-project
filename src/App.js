@@ -1,25 +1,24 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, lazy } from 'react'
 import { Switch, Route, BrowserRouter } from 'react-router-dom'
+import { ConnectedRouter } from 'connected-react-router'
 import AppWrapper from './containers/Layout/AppWrapper'
-import Layout from './containers/Layout'
 import { loading } from './utils/helpers'
+import './App.scss'
 
-function App() {
+const Login = lazy(() => import('./containers/Auth/Login'))
+const Layout = lazy(() => import('./containers/Layout'))
+
+function App({ history }) {
   return (
     <AppWrapper>
       <BrowserRouter>
         <Suspense fallback={loading()}>
-          <Switch>
-            <Route
-              path="/"
-              render={props => {
-                const { location, history, match } = props
-                return (
-                  <Layout location={location} history={history} match={match} />
-                )
-              }}
-            />
-          </Switch>
+          <ConnectedRouter history={history}>
+            <Switch>
+              <Route path="/login" render={props => <Login {...props} />} />
+              <Route path="/" render={props => <Layout {...props} />} />
+            </Switch>
+          </ConnectedRouter>
         </Suspense>
       </BrowserRouter>
     </AppWrapper>

@@ -6,10 +6,16 @@ import {
 } from './constants'
 
 const initialState = {
-  token: {},
+  token: {
+    tokenType: null,
+    accessToken: null,
+    expiresIn: null,
+    refreshToken: null,
+  },
   user: {},
   isFetching: false,
-  error: {status: false, message: null}
+  isAuthenticated: false,
+  error: {},
 }
 
 const reducer = (state = initialState, action) => {
@@ -17,26 +23,33 @@ const reducer = (state = initialState, action) => {
 
   switch (type) {
     case LOGIN_SUCCESS: {
+      const { token, user } = payload
       return {
         ...state,
-        token: payload.token,
-        user: payload.user,
+        token,
+        user,
+        isFetching: false,
+        isAuthenticated: true,
+        error,
       }
     }
     case LOGIN_FAILURE: {
       return {
-        ...state,
-        error: {status: true, message: error},
+        ...initialState,
+        error,
       }
     }
     case REGISTER_FAILURE: {
       return {
         ...state,
-        error: {status: true, message: error},
+        error,
       }
     }
     case LOGOUT: {
-      return initialState
+      return {
+        ...initialState,
+        isAuthenticated: false,
+      }
     }
     default:
       return state

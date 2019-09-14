@@ -1,28 +1,29 @@
-import React from 'react'
-import { setClass } from '../../utils/responsiveHelpers'
+import React, { Component } from 'react'
+import styled from 'styled-components'
+import LoginForm from '../../containers/Auth/LoginForm'
 
-function Login(props) {
-  const { breakpoint } = props
-  return (
-    <div
-      className={setClass(
-        {
-          default: 'default',
-          desktopLg: 'desktop-lg',
-          desktopMd: 'desktop-md',
-          desktopSm: 'desktop-sm',
-          tabletLg: 'tablet-lg',
-          tabletMd: 'tablet-md',
-          tabletSm: 'tablet-sm',
-          mobileLg: 'mobile-lg',
-          mobileMd: 'mobile-md',
-          mobileSm: 'mobile-sm'
-        },
-        breakpoint,
-      )}>
-      Login
-    </div>
-  )
+const LoginWrap = styled.div`
+  display: flex;
+  justify-content: center;
+`
+
+class Login extends Component {
+  componentDidMount() {
+    const { auth, goHome } = this.props
+    if (auth.isAuthenticated && auth.token) {
+      goHome()
+    }
+  }
+
+  render() {
+    const { auth, handleLogin } = this.props
+
+    return (
+      <LoginWrap>
+        <LoginForm handleLogin={handleLogin} authError={auth.error} />
+      </LoginWrap>
+    )
+  }
 }
 
 export default Login

@@ -1,9 +1,11 @@
 import { fork, all } from 'redux-saga/effects'
 
 import authSaga from './containers/Auth/sagas'
+import coursesSaga from './containers/Home/sagas'
 
 const sagas = [
-  ...authSaga
+  ...authSaga,
+  ...coursesSaga
 ]
 
 function* globalSagas() {

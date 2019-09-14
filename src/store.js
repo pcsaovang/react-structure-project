@@ -1,9 +1,12 @@
 import { createStore, applyMiddleware, compose } from 'redux'
-import { routerMiddleware } from 'react-router-redux'
+import { routerMiddleware } from 'connected-react-router'
 import { createBrowserHistory } from 'history'
 import createSagaMiddleware from 'redux-saga'
+import { persistStore, persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
+import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
 
-import { onApiUnauthenticated, onAuthSuccess } from './middleware/auth'
+import { onApiUnauthenticated, onAuthSuccess, checkAuthOnRehydrate } from './middleware/auth'
 import rootReducer from './reducer'
 import rootSaga from './saga'
 
@@ -17,7 +20,14 @@ const middleware = [
   sagaMiddleware,
   onApiUnauthenticated,
   onAuthSuccess,
+  checkAuthOnRehydrate
 ]
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['auth'],
+  stateReconciler: autoMergeLevel2
+}
 
 if (process.env.NODE_ENV === 'development') {
   const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__
@@ -32,7 +42,13 @@ const composedEnhancers = compose(
   ...enhancers,
 )
 
-const store = createStore(rootReducer, initialState, composedEnhancers)
+const store = createStore(
+  persistReducer(persistConfig, rootReducer(history)),
+  initialState,
+  composedEnhancers,
+)
+
+export const persistor = persistStore(store)
 
 sagaMiddleware.run(rootSaga)
 

@@ -1,19 +1,21 @@
-import { put, takeLatest } from 'redux-saga/effects'
-import { push } from 'react-router-redux'
-import axios from 'axios'
+import { call, put, takeLatest } from 'redux-saga/effects'
+import { push } from 'connected-react-router'
 import { LOGIN, LOGOUT, REGISTER, ENDPOINT } from './constants'
 import { loginSuccess, loginFailure, registerSuccess } from './actions'
 import toastify from '../../utils/toastify'
+import { sendRequest } from '../../utils/helpers'
 
 function* handleLogin() {
   yield takeLatest(LOGIN, function* _handleLogin(action) {
     try {
-      const res = yield axios.post(`${ENDPOINT}/login`, action.payload)
+      const res = yield call(sendRequest, `${ENDPOINT}/login`, {
+        method: 'POST',
+        data: action.payload
+      })
       yield put(loginSuccess(res.data))
-      toastify({ msg: 'Welcome back!' })
+      yield put(push('/'))
     } catch (error) {
       yield put(loginFailure(error))
-      toastify({ msg: 'Failed to login', type: 'error' })
     }
   })
 }
@@ -21,12 +23,9 @@ function* handleLogin() {
 function* handleRegister() {
   yield takeLatest(REGISTER, function* _handleRegister(action) {
     try {
-      const res = yield axios.post(`${ENDPOINT}/register`, action.payload)
+      const res = yield call(sendRequest, '/register', { params: action.payload })
       yield put(registerSuccess(res.data))
       yield put(push('/login'))
-      toastify({
-        msg: 'Register success!',
-      })
     } catch (error) {
       yield put(loginFailure(error))
       let message = 'Register error.'
